@@ -2,7 +2,7 @@
 
 > **Collaborative gift wishlist web application built with Java 21, Jakarta EE 6 Servlets/JSTL, HikariCP + JDBC, and PostgreSQL 16 — packaged with a reproducible Nix Flake, Gradle WAR build, and Docker/Podman end-to-end runtime stack.**
 
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](./LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 ![Status: Archived First Project (Reference)](https://img.shields.io/badge/Status-Archived%20First%20Project%20%28Reference%29-6c757d)
 [![CI](https://github.com/NiklasJavier/SmartGiftList/actions/workflows/ci.yml/badge.svg)](https://github.com/NiklasJavier/SmartGiftList/actions/workflows/ci.yml)
 [![Java](https://img.shields.io/badge/Java-21%20%28WAR%20%2F%20Tomcat%2010.1%29-ED8B00?logo=openjdk&logoColor=white)](./build.gradle)
@@ -141,4 +141,11 @@ flowchart LR
 | [docs/security-notes.md](./docs/security-notes.md) | PBKDF2 hashing, CSRF tokens, AuthFilter/IDOR guards, URL sanitization, HTML escaping |
 | [.agents/README.md](./.agents/README.md) | Agent & contributor codebase index and `repo-skills` guide |
 
-Community & governance: [`CONTRIBUTING.md`](./CONTRIBUTING.md) · [`SECURITY.md`](./SECURITY.md) · [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) · [`CHANGELOG.md`](./CHANGELOG.md) · [`LICENSE`](./LICENSE) (Apache-2.0)
+---
+
+## License & Disclaimer
+
+- **License:** Released under the [MIT License](./LICENSE).
+- **No Warranty / Limitation of Liability:** This software and accompanying documentation are provided **"as is"**, without warranty of any kind, express or implied (including merchantability, fitness for a particular purpose, and noninfringement). Any use, modification, or deployment is strictly at your own risk; the author and copyright holders assume no liability for any claims, damages, data loss, or security incidents arising out of or in connection with this software.
+
+Community & governance: [`CONTRIBUTING.md`](./CONTRIBUTING.md) · [`SECURITY.md`](./SECURITY.md) · [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) · [`CHANGELOG.md`](./CHANGELOG.md) · [`LICENSE`](./LICENSE)
