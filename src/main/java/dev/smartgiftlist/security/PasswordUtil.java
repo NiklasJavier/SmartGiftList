@@ -1,6 +1,5 @@
 package dev.smartgiftlist.security;
 
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -69,10 +68,5 @@ public final class PasswordUtil {
         } catch (GeneralSecurityException ex) {
             throw new IllegalStateException("PBKDF2 password hashing unavailable", ex);
         }
-    }
-
-    @SuppressWarnings("unused")
-    private static byte[] utf8(String value) {
-        return value.getBytes(StandardCharsets.UTF_8);
     }
 }

@@ -1,0 +1,8 @@
+<c:if test="${not empty flash}">
+  <c:if test="${flash.hasTitle}">
+    <span class="message-yellowUp"><c:out value="${flash.title}"/></span>
+  </c:if>
+  <c:if test="${not empty flash.detail}">
+    <span class="${flash.error ? 'message-red' : 'message-yellowDown'}"><c:out value="${flash.detail}"/></span>
+  </c:if>
+</c:if>

@@ -103,7 +103,7 @@ PY
     echo "==> Starting Apache Tomcat 10 on http://localhost:${APP_PORT}/ ..."
     "${CATALINA_HOME}/bin/catalina.sh" start >/dev/null
 
-    local url="http://localhost:${APP_PORT}/jsp/LandingView.jsp"
+    local url="http://localhost:${APP_PORT}/health"
     local deadline=$((SECONDS + 45))
     until curl -fsS "${url}" >/dev/null 2>&1; do
         if [ "${SECONDS}" -ge "${deadline}" ]; then

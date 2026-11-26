@@ -89,7 +89,7 @@ EOF
 }
 
 wait_for_http() {
-    local url="http://localhost:${APP_PORT}/jsp/LandingView.jsp"
+    local url="http://localhost:${APP_PORT}/health"
     local deadline=$((SECONDS + WAIT_SECONDS))
     echo "==> Waiting for SmartGiftList at ${url} ..."
     until curl -fsS "${url}" >/dev/null 2>&1; do

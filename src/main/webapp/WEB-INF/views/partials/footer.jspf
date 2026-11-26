@@ -1,0 +1,39 @@
+<footer class="site-footer">
+  <div class="footer-divider"></div>
+  <div class="footer-container">
+    <div class="footer-section">
+      <h3>Our Vision</h3>
+      <p>Coordinating group gifts — simple, transparent, and user-friendly.</p>
+      <div class="social-icons">
+        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"><img src="${pageContext.request.contextPath}/img/facebook.png" alt="Facebook" class="social-icon"></a>
+        <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer"><img src="${pageContext.request.contextPath}/img/instagram.png" alt="Instagram" class="social-icon"></a>
+        <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer"><img src="${pageContext.request.contextPath}/img/youtube.png" alt="YouTube" class="social-icon"></a>
+      </div>
+    </div>
+    <div class="footer-section">
+      <h3>Links</h3>
+      <ul>
+        <li>
+          <c:choose>
+            <c:when test="${not empty navPage}">
+              <a href="${pageContext.request.contextPath}/wishlists">Home</a>
+            </c:when>
+            <c:otherwise>
+              <a href="${pageContext.request.contextPath}/">Home</a>
+            </c:otherwise>
+          </c:choose>
+        </li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>Legal</h3>
+      <ul>
+        <li><a href="${pageContext.request.contextPath}/">Imprint</a></li>
+        <li><a href="${pageContext.request.contextPath}/">Privacy Notice</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>SmartGiftList</p>
+  </div>
+</footer>

@@ -1,6 +1,6 @@
 # SmartGiftList
 
-> **Collaborative gift wishlist web application built with Java 21, Jakarta EE JSP/Servlets, JDBC, and PostgreSQL — packaged with a reproducible Nix Flake, Gradle WAR build, and Docker Compose end-to-end runtime stack.**
+> **Collaborative gift wishlist web application built with Java 21, Jakarta EE 6 Servlets/JSTL, HikariCP + JDBC, and PostgreSQL 16 — packaged with a reproducible Nix Flake, Gradle WAR build, and Docker/Podman end-to-end runtime stack.**
 
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](./LICENSE)
 ![Status: Archived First Project (Reference)](https://img.shields.io/badge/Status-Archived%20First%20Project%20%28Reference%29-6c757d)
@@ -12,7 +12,7 @@
 ---
 
 > [!NOTE]
-> **Project Context:** SmartGiftList was my very first software and web development project, built to learn server-side Java/JSP development, relational SQL data modeling, and session-driven MVC workflows from scratch. It has since been sanitized and modernized for reproducible local runs and unit testing, and remains **archived as a completed reference with no ongoing feature development**. Default container credentials in [`.env.example`](./.env.example) are strictly for local evaluation — see [`SECURITY.md`](./SECURITY.md) before reusing any component.
+> **Project Context:** SmartGiftList was my very first software and web development project, originally written with JSP scriptlets to learn server-side Java and SQL modeling. It has since been sanitized and refactored into a clean layered **Jakarta Servlet 6 MVC + JSTL 3.0 + HikariCP** architecture for reproducible local runs and testing, while remaining **archived as a completed reference with no ongoing feature roadmap**. Default credentials in [`.env.example`](./.env.example) are strictly for local evaluation — see [`SECURITY.md`](./SECURITY.md) before reusing any component.
 
 ---
 
@@ -26,7 +26,7 @@
 **2. Verify, boot, and smoke-test end-to-end:**
 
 ```bash
-# Clone, enter reproducible dev shell, verify WAR build, unit tests, configs, docs & privacy
+# Clone, enter reproducible dev shell, verify WAR build, JUnit 5 tests, configs, docs & privacy
 git clone https://github.com/NiklasJavier/SmartGiftList.git && cd SmartGiftList
 nix develop
 just doctor && just check
@@ -34,7 +34,7 @@ just doctor && just check
 # Container path (Docker or Podman): start PostgreSQL 16 + auto-connected Tomcat 10.1
 just up
 
-# Live 7-step E2E check: Landing page -> Register -> Sign in -> Wishlist -> Gift item -> Sign out
+# Live 12-step E2E check: /health -> auth/CSRF guards -> register -> login -> wishlist -> group gift -> IDOR -> profile -> logout
 just verify-e2e
 # Browse interactively at: http://localhost:8080/
 
@@ -51,34 +51,29 @@ Manual container/Gradle usage without Nix, environment variable overrides, and `
 
 ## Architecture & Core Capabilities
 
-SmartGiftList follows a classic **JSP View / Handler (`*View.jsp` -> `*Appl.jsp`) + JavaBean Session Facade (`OwnWishListBean`) + JDBC Manager** architecture backed by PostgreSQL:
+SmartGiftList uses a layered **Jakarta Servlet 6 MVC architecture** backed by pooled **HikariCP JDBC** connections, **JSTL 3.0** views (`scripting-invalid=true`), and **PostgreSQL 16**:
 
 ```mermaid
 flowchart LR
-  Browser["Web Browser<br/>JSP + CSS + Vanilla JS"] -->|HTTP GET/POST| Tomcat["Apache Tomcat 10.1<br/>ROOT.war (JDK 21)"]
-  subgraph WebLayer["JSP View & Action Layer"]
-    Views["LandingView · LoginView<br/>RegView · OwnWishListView · ProfilView"]
-    Handlers["NavAppl · LoginAppl · RegAppl<br/>OwnWishListAppl · ProfilAppl"]
-    Views -->|Form Submit| Handlers
-    Handlers -->|Redirect| Views
-  end
-  Tomcat --> WebLayer
-  WebLayer -->|Session Beans| Facade["AccountBean · LoginBean · MessageBean<br/>OwnWishListBean"]
-  Facade --> Managers["WishlistManager · GiftManager<br/>ChatManager · ProfilManager"]
-  Facade --> Security["PasswordUtil (PBKDF2)<br/>HtmlUtil (XSS Escape)"]
-  Managers -->|JDBC + PreparedStatements| PG[("PostgreSQL 16<br/>smartgiftlist schema")]
+  Browser["Web Browser<br/>JSTL 3.0 + CSS + Vanilla JS"] -->|HTTP GET/POST| Filters["Filters: EncodingAndSecurity · Csrf · Auth"]
+  Filters --> Servlets["Servlets: Health · Landing · Auth · Wishlist · Profile"]
+  Servlets -->|Render via PRG| Views["/WEB-INF/views/*.jsp<br/>Zero Scriptlets"]
+  Servlets --> Services["Services: Auth · Wishlist · Gift · Comment<br/>Validation & IDOR Guards"]
+  Services --> Security["PasswordUtil (PBKDF2)<br/>HtmlUtil · CsrfTokenUtil"]
+  Services --> Repos["JDBC Repositories<br/>HikariCP Pool + Row Locks"]
+  Repos --> PG[("PostgreSQL 16<br/>smartgiftlist schema")]
 ```
 
 ### Features Implemented
 
-- **User Onboarding & Profile Management:** Registration (`RegView.jsp`), PBKDF2-HMAC-SHA256 authentication (`LoginView.jsp`), profile editing with avatar selection (`Lumibella`, `Novaterra`, `Quixart`), and cascade account deletion (`ProfilView.jsp`).
-- **Personal & Shared Wishlists (`NetID` Invites):** Create themed wishlists (`PaperList`, `BrozeList`, `SilverList`, `GoldenList`), edit metadata/event dates, and invite friends or family via a wishlist `NetID` code.
-- **Gift Types & Claim Coordination:**
+- **User Onboarding & Profile Management:** Registration (`/register`), PBKDF2-HMAC-SHA256 authentication (`/login`) with session ID rotation, optional-password profile updates with avatar selection (`Lumibella`, `Novaterra`, `Quixart`) on `/profile`, CSRF protection (`_csrf`), and cascade account deletion.
+- **Personal & Shared Wishlists (`SGL-XXXX-XXXX` Invites):** Create themed wishlists (`PaperList`, `BronzeList`, `SilverList`, `GoldenList`), edit metadata/event dates (owner-enforced), and invite friends or family via a high-entropy random `NetID`.
+- **Gift Types & Atomic Claim Coordination:**
   - `IG` (**Individual Gift**) — single-contributor item
-  - `GG` (**Group Gift**) — multi-contributor item tracking participant capacity
+  - `GG` (**Group Gift**) — multi-contributor item tracking participant capacity atomically via `FOR UPDATE`
   - `SG` (**Surprise Gift**) — marks surprise items for wishlist planning
   - `CL` (**Claimed**) — automatically flips row status once participant slots are filled
-- **Per-Wishlist Discussion Feed:** Participant chat messages with timestamp ordering and one-click message withdrawal (`ChatManager`).
+- **Per-Wishlist Discussion Feed:** Member-scoped chat messages with timestamp ordering and one-click withdrawal of the user's latest comment.
 
 ---
 
@@ -87,10 +82,10 @@ flowchart LR
 | Document | Focus |
 | :--- | :--- |
 | [docs/README.md](./docs/README.md) | Documentation index |
-| [docs/getting-started.md](./docs/getting-started.md) | macOS/Linux/Windows setup, manual build, env vars, E2E walkthrough |
-| [docs/architecture.md](./docs/architecture.md) | JSP MVC flow, JavaBeans, JDBC schema resolution, frontend JS/CSS |
-| [docs/database-schema.md](./docs/database-schema.md) | PostgreSQL ER diagram and all 6 relational tables (`docker/init.sql`) |
-| [docs/security-notes.md](./docs/security-notes.md) | Password hashing, SQL injection guards, HTML escaping, legacy caveats |
+| [docs/getting-started.md](./docs/getting-started.md) | macOS/Linux/Windows setup, manual build, env vars, 12-step E2E walkthrough |
+| [docs/architecture.md](./docs/architecture.md) | Layered Servlet 6 MVC, HikariCP/JDBC repositories, services, JSTL views, JS/CSS |
+| [docs/database-schema.md](./docs/database-schema.md) | PostgreSQL ER diagram, 6 relational tables, unique constraints, and indexes (`docker/init.sql`) |
+| [docs/security-notes.md](./docs/security-notes.md) | PBKDF2 hashing, CSRF tokens, AuthFilter/IDOR guards, URL sanitization, HTML escaping |
 | [.agents/README.md](./.agents/README.md) | Agent & contributor codebase index and `repo-skills` guide |
 
 Community & governance: [`CONTRIBUTING.md`](./CONTRIBUTING.md) · [`SECURITY.md`](./SECURITY.md) · [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) · [`CHANGELOG.md`](./CHANGELOG.md) · [`LICENSE`](./LICENSE) (Apache-2.0)

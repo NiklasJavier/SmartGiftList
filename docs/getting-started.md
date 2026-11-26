@@ -37,7 +37,7 @@ just check
 # 2. Start PostgreSQL 16 (auto-initialized via docker/init.sql) and Tomcat 10.1 via Docker or Podman
 just up
 
-# 3. Run automated 7-step HTTP + PostgreSQL smoke check
+# 3. Run automated 12-step HTTP + PostgreSQL smoke check
 just verify-e2e
 
 # 4. Inspect logs or open http://localhost:8080/ in your browser
@@ -65,13 +65,12 @@ All temporary Unix sockets, PostgreSQL `PGDATA`, and Tomcat `CATALINA_BASE` file
 
 ### What `just verify-e2e` Validates
 
-[`scripts/verify-e2e.sh`](../scripts/verify-e2e.sh) runs a non-destructive 7-step HTTP + PostgreSQL smoke test against the live stack (`http://localhost:8080`), covering:
+[`scripts/verify-e2e.sh`](../scripts/verify-e2e.sh) runs a 12-step HTTP + PostgreSQL verification flow against `http://localhost:8080`:
 
-- Polling `GET /jsp/LandingView.jsp` for HTTP `200` and expected landing content.
-- Registering a uniquely named temporary test account (`POST /jsp/RegAppl.jsp`) to test PBKDF2 password hashing and PostgreSQL `Users` persistence.
-- Signing in (`POST /jsp/LoginAppl.jsp`) with session cookies (`curl -b/-c`) and verifying redirect to the authenticated dashboard (`My Wishlists`).
-- Creating a wishlist (`POST /jsp/OwnWishListAppl.jsp`) and gift entry (`E2E Mug`) in PostgreSQL and confirming they render in HTML.
-- Signing out cleanly and confirming the unauthenticated public state.
+- Polls `GET /health` (`{"status":"ok"}`) and verifies `GET /`, static CSS/JS assets, and unique HTML `id` attributes.
+- Verifies unauthenticated `GET /wishlists` and `GET /profile` redirect (`302`) to `/login`, and confirms missing `_csrf` triggers HTTP `403`.
+- Exercises registration + duplicate rejection (`/register`), login (`/login`), wishlist creation (`SGL-*` NetID) & updates, group gift addition (`GG`), claim/release/re-claim, and comment posting/withdrawal (`/wishlists`).
+- Creates a second user session to confirm cross-user IDOR blocking before joining, `NetID` connect, full group gift claim transition (`GG, CL`), optional-password profile edit (`/profile`), clean logout (`/logout`), and account deletion.
 
 ---
 
@@ -100,7 +99,7 @@ docker compose down -v
 
 Copy [`.env.example`](../.env.example) to `.env` before customizing ports or credentials:
 
-| Variable | Default (`docker-compose.yml`) | Default (`PostgreSQLAccess`) | Purpose |
+| Variable | Default (`docker-compose.yml`) | Default (`DatabaseConfig`) | Purpose |
 | :--- | :--- | :--- | :--- |
 | `APP_PORT` | `8080` | `8080` | Host port mapped to Tomcat HTTP (`8080`) |
 | `PG_PORT` | `5432` | `5432` | Host port mapped to PostgreSQL (`5432`) |
@@ -112,9 +111,9 @@ Copy [`.env.example`](../.env.example) to `.env` before customizing ports or cre
 
 ---
 
-## 5. Manual Schema Reset (`AppTables`)
+## 5. Automatic Schema Assurance (`SchemaInitializer`)
 
-When using `docker compose up`, [`docker/init.sql`](../docker/init.sql) creates the `smartgiftlist` schema and all six tables automatically on first volume initialization. If you point the application at an external empty PostgreSQL database, you can recreate tables via [`AppTables`](../src/main/java/dev/smartgiftlist/jdbc/AppTables.java) or execute `docker/init.sql` directly with `psql`.
+When using `docker compose up` or `just local-up`, [`docker/init.sql`](../docker/init.sql) creates the `smartgiftlist` schema, all six tables, uniqueness constraints, and indexes. On application startup, [`SchemaInitializer`](../src/main/java/dev/smartgiftlist/config/SchemaInitializer.java) also executes `ensureSchema` idempotently (and exposes a `main` CLI entry point for empty external databases).
 
 ---
 
@@ -122,6 +121,6 @@ When using `docker compose up`, [`docker/init.sql`](../docker/init.sql) creates 
 
 | Symptom | Cause | Fix |
 | :--- | :--- | :--- |
-| `PostgreSQLAccess` throws `NoConnectionException` | PostgreSQL not reachable or wrong `DB_URL` | Wait for `smartgiftlist-postgres` healthcheck (`docker compose ps`) or check `.env` |
+| App fails readiness on `/health` | PostgreSQL not reachable or wrong `DB_URL` | Inspect `just logs` or `.env` configuration |
 | Schema changes in `docker/init.sql` ignored on restart | Docker named volume already initialized | Recreate volume cleanly via `just down && just up` |
-| `just verify-e2e` times out waiting for `8080` | Tomcat still starting or non-default `APP_PORT` | Run `SMARTGIFTLIST_URL=http://localhost:<port> ./scripts/verify-e2e.sh` |
+| `just verify-e2e` times out waiting for `/health` | Tomcat still starting or non-default `APP_PORT` | Run `SMARTGIFTLIST_URL=http://localhost:<port> ./scripts/verify-e2e.sh` |

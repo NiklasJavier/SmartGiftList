@@ -1,0 +1,15 @@
+<header class="site-header">
+  <div class="header-container">
+    <div class="logo">
+      <a href="${pageContext.request.contextPath}/" class="logo-items">
+        <img src="${pageContext.request.contextPath}/img/icons/logo.svg" alt="SmartGiftList logo"/>SmartGiftList
+      </a>
+    </div>
+    <div class="header-buttons">
+      <c:if test="${showLandingButtons}">
+        <a href="${pageContext.request.contextPath}/register" class="header-btn header-btn-secondary">Register</a>
+        <a href="${pageContext.request.contextPath}/login" class="header-btn header-btn-primary">Sign In</a>
+      </c:if>
+    </div>
+  </div>
+</header>

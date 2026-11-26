@@ -1,0 +1,24 @@
+<header class="secondary-header">
+  <button type="button" class="menu-icon" id="nav-menu-toggle" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation">
+    <img src="${pageContext.request.contextPath}/img/icons/list.svg" alt="Menu" id="open-icon">
+    <img src="${pageContext.request.contextPath}/img/icons/x.svg" alt="Close" id="close-icon" style="display: none;">
+  </button>
+  <nav id="primary-nav" class="nav" aria-label="Primary navigation">
+    <div class="nav-section left-section">
+      <a href="${pageContext.request.contextPath}/wishlists" class="nav-link ${navPage == 'wishlists' ? 'is-active' : ''}">
+        <img src="${pageContext.request.contextPath}/img/icons/card-heading.svg" alt="Wishlists icon"> My Wishlists
+      </a>
+    </div>
+    <div class="nav-section right-section">
+      <a href="${pageContext.request.contextPath}/profile" class="nav-link ${navPage == 'profile' ? 'is-active' : ''}">
+        <img src="${pageContext.request.contextPath}/img/icons/person-fill-gear.svg" alt="Profile icon"> Profile
+      </a>
+      <form action="${pageContext.request.contextPath}/logout" method="post" class="nav-inline-form">
+        <input type="hidden" name="_csrf" value="${csrfToken}">
+        <button type="submit" class="nav-link logout-button">
+          <img src="${pageContext.request.contextPath}/img/icons/box-arrow-right.svg" alt="Sign out icon"> Sign Out
+        </button>
+      </form>
+    </div>
+  </nav>
+</header>
