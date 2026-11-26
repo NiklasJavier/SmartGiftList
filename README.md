@@ -14,6 +14,59 @@
 > [!NOTE]
 > **Project Context:** SmartGiftList was my very first software and web development project, originally written with JSP scriptlets to learn server-side Java and SQL modeling. It has since been sanitized and refactored into a clean layered **Jakarta Servlet 6 MVC + JSTL 3.0 + HikariCP** architecture for reproducible local runs and testing, while remaining **archived as a completed reference with no ongoing feature roadmap**. Default credentials in [`.env.example`](./.env.example) are strictly for local evaluation — see [`SECURITY.md`](./SECURITY.md) before reusing any component.
 
+## Visual Overview
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="./docs/screenshots/landing.png">
+        <img src="./docs/screenshots/landing.png" width="380" alt="SmartGiftList Landing Page">
+      </a>
+      <br/><sub><b>Landing Page &amp; FAQ Accordion (<code>/</code>)</b></sub>
+    </td>
+    <td align="center">
+      <a href="./docs/screenshots/gift-details-modal.png">
+        <img src="./docs/screenshots/gift-details-modal.png" width="380" alt="Gift Details and Claiming Modal">
+      </a>
+      <br/><sub><b>Gift Details &amp; Claiming Modal (<code>?openDetails=1</code>)</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="./docs/screenshots/login.png">
+        <img src="./docs/screenshots/login.png" width="380" alt="Sign In View">
+      </a>
+      <br/><sub><b>Sign In (<code>/login</code>)</b></sub>
+    </td>
+    <td align="center">
+      <a href="./docs/screenshots/register.png">
+        <img src="./docs/screenshots/register.png" width="380" alt="Registration View">
+      </a>
+      <br/><sub><b>Account Registration (<code>/register</code>)</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="./docs/screenshots/profile.png">
+        <img src="./docs/screenshots/profile.png" width="380" alt="Profile Management View">
+      </a>
+      <br/><sub><b>Profile Management (<code>/profile</code>)</b></sub>
+    </td>
+    <td align="left" valign="top">
+      <b>All 6 captured views</b> (<code>1440x900</code>):
+      <ul>
+        <li><a href="./docs/screenshots/landing.png">Landing Page</a> (<code>/</code>)</li>
+        <li><a href="./docs/screenshots/register.png">Registration</a> (<code>/register</code>)</li>
+        <li><a href="./docs/screenshots/login.png">Sign In</a> (<code>/login</code>)</li>
+        <li><a href="./docs/screenshots/wishlists.png">Wishlist Dashboard</a> (<code>/wishlists</code>)</li>
+        <li><a href="./docs/screenshots/gift-details-modal.png">Gift Details Modal</a> (<code>?openDetails=1</code>)</li>
+        <li><a href="./docs/screenshots/profile.png">Profile Management</a> (<code>/profile</code>)</li>
+      </ul>
+      <sub>Full-resolution PNG captures stored in <a href="./docs/screenshots/"><code>docs/screenshots/</code></a>.</sub>
+    </td>
+  </tr>
+</table>
+
 ---
 
 ## Quickstart (End-to-End Go-Live & Verification)
@@ -74,27 +127,6 @@ flowchart LR
   - `SG` (**Surprise Gift**) — marks surprise items for wishlist planning
   - `CL` (**Claimed**) — automatically flips row status once participant slots are filled
 - **Per-Wishlist Discussion Feed:** Member-scoped chat messages with timestamp ordering and one-click withdrawal of the user's latest comment.
-
----
-
-## Views & Screenshots
-
-Captured from the live Servlet 6 / PostgreSQL 16 application (`1440x900` desktop viewport):
-
-| Landing Page | Gift Details & Claiming Modal |
-| :---: | :---: |
-| [![Landing Page](./docs/screenshots/landing.png)](./docs/screenshots/landing.png) | [![Gift Details & Claiming Modal](./docs/screenshots/gift-details-modal.png)](./docs/screenshots/gift-details-modal.png) |
-| Hero overview, FAQ accordion, and feature highlights (`/`) | Participant capacity tracking and claim/release actions (`?openDetails=1`) |
-
-| Sign In | Registration |
-| :---: | :---: |
-| [![Sign In](./docs/screenshots/login.png)](./docs/screenshots/login.png) | [![Registration](./docs/screenshots/register.png)](./docs/screenshots/register.png) |
-| Credential authentication view (`/login`) | New account onboarding form (`/register`) |
-
-| Profile Management | View Index |
-| :---: | :--- |
-| [![Profile Management](./docs/screenshots/profile.png)](./docs/screenshots/profile.png) | **All 6 captured views:**<br>- [Landing Page](./docs/screenshots/landing.png) (`/`)<br>- [Registration](./docs/screenshots/register.png) (`/register`)<br>- [Sign In](./docs/screenshots/login.png) (`/login`)<br>- [Wishlist Dashboard](./docs/screenshots/wishlists.png) (`/wishlists`)<br>- [Gift Details Modal](./docs/screenshots/gift-details-modal.png) (`?openDetails=1`)<br>- [Profile Management](./docs/screenshots/profile.png) (`/profile`) |
-| Avatar selection, credentials, and account deletion (`/profile`) | Full-resolution PNG captures stored in [`docs/screenshots/`](./docs/screenshots/). |
 
 ---
 
