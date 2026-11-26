@@ -1,7 +1,5 @@
 # SmartGiftList
 
-> **Collaborative gift wishlist web application built with Java 21, Jakarta EE 6 Servlets/JSTL, HikariCP + JDBC, and PostgreSQL 16 — packaged with a reproducible Nix Flake, Gradle WAR build, and Docker/Podman end-to-end runtime stack.**
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 ![Status: Archived First Project (Reference)](https://img.shields.io/badge/Status-Archived%20First%20Project%20%28Reference%29-6c757d)
 [![CI](https://github.com/NiklasJavier/SmartGiftList/actions/workflows/ci.yml/badge.svg)](https://github.com/NiklasJavier/SmartGiftList/actions/workflows/ci.yml)
