@@ -94,32 +94,3 @@ flowchart LR
 | [.agents/README.md](./.agents/README.md) | Agent & contributor codebase index and `repo-skills` guide |
 
 Community & governance: [`CONTRIBUTING.md`](./CONTRIBUTING.md) · [`SECURITY.md`](./SECURITY.md) · [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) · [`CHANGELOG.md`](./CHANGELOG.md) · [`LICENSE`](./LICENSE) (Apache-2.0)
-
----
-
-## Repository Structure
-
-```text
-SmartGiftList/
-├── .agents/                  # Agent orientation hub & smartgiftlist-navigator skill
-├── .github/                  # CI workflow (WAR build, JUnit 5, linters, live E2E) & templates
-├── docker/init.sql           # Auto-provisioned PostgreSQL schema & 6 tables
-├── docs/                     # Architecture, DB schema, security notes, setup guide
-├── scripts/                  # stack.sh (Docker/Podman), local-stack.sh (Nix), verify-e2e.sh (E2E)
-├── src/
-│   ├── main/java/dev/smartgiftlist/
-│   │   ├── beans/            # Session beans & managers (Wishlist, Gift, Chat, Profil)
-│   │   ├── jdbc/             # Environment-configured PostgreSQL & schema initializer
-│   │   └── security/         # PBKDF2-HMAC-SHA256 PasswordUtil & HtmlUtil escaping
-│   ├── main/webapp/
-│   │   ├── WEB-INF/web.xml   # Jakarta EE 6 web descriptor
-│   │   ├── css/ js/ img/     # Stylesheets, client validation/popup scripts, SVG/WebP assets
-│   │   └── jsp/              # 5 View JSPs + 5 Action Handler JSPs
-│   └── test/java/dev/smartgiftlist/
-│       └── ...               # JUnit 5 tests (PasswordUtil, HtmlUtil, DB config, beans)
-├── build.gradle              # Gradle WAR build & JUnit 5 test setup (Java 21)
-├── docker-compose.yml        # PostgreSQL 16 + Tomcat 10.1 end-to-end stack
-├── Dockerfile                # Multi-stage Gradle -> Tomcat 10.1 container image
-├── flake.nix / justfile      # Reproducible Nix devShell & command surface
-└── README.md
-```
