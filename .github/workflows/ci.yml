@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    name: Build, Test, Privacy & E2E Container Stack
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Make scripts executable
+        run: chmod +x ./gradlew ./scripts/*.sh
+
+      - name: Build WAR and run unit tests
+        run: ./gradlew --no-daemon war test
+
+      - name: Verify shell scripts
+        run: |
+          bash -n scripts/*.sh
+          shellcheck -S error scripts/*.sh
+
+      - name: Validate YAML, XML, SQL, Markdown links, and privacy boundary
+        run: |
+          ruby -ryaml -e 'Dir.glob("{docker-compose.yml,.github/**/*.yml}").each { |f| YAML.safe_load(File.read(f), aliases: true) }'
+          python3 -c 'import xml.etree.ElementTree as ET, glob; [ET.parse(f) for f in glob.glob("src/main/webapp/WEB-INF/*.xml")]'
+          python3 -c 'import pathlib; sql = pathlib.Path("docker/init.sql").read_text(encoding="utf-8"); assert "CREATE SCHEMA IF NOT EXISTS smartgiftlist" in sql and sql.count("CREATE TABLE IF NOT EXISTS") == 6'
+          python3 -c 'import re, pathlib; mds = sorted([p for p in pathlib.Path(".").rglob("*.md") if ".git" not in p.parts]); broken = [(str(md), m.group(1)) for md in mds for m in re.finditer(r"!?\[[^\]]*\]\(([^)]+)\)", re.sub(r"```.*?```", "", md.read_text(encoding="utf-8"), flags=re.S)) if not m.group(1).startswith(("http://", "https://", "mailto:", "#")) and m.group(1).split("#")[0] and not (md.parent / m.group(1).split("#")[0]).resolve().exists()]; assert not broken, broken'
+          python3 -c 'import re, pathlib; pat = re.compile("([\xe4\xf6\xfc\xc4\xd6\xdc\xdf]|[/]Users/|[/]home/[a-zA-Z0-9._-]+|jdbc:postgresql://(?!127[.]0[.]0[.]1)[0-9]+[.]|de[.][a-z]{3}[.]sgl|[a-z]{3}[0-9]{3}_[0-9]{5,})"); hits = [f"{p}:{i}" for p in sorted(pathlib.Path(".").rglob("*")) if p.is_file() and ".git" not in p.parts and "build" not in p.parts and ".gradle" not in p.parts and ".local-runtime" not in p.parts and p.suffix.lower() not in {".png",".jpg",".jpeg",".webp",".svg",".jar"} and p.name != "flake.lock" for i, l in enumerate(p.read_text(encoding="utf-8", errors="ignore").splitlines(), 1) if pat.search(l)]; assert not hits, hits'
+
+      - name: Boot Docker Compose stack and run live HTTP + PostgreSQL E2E smoke test
+        run: |
+          ./scripts/stack.sh up
+          ./scripts/verify-e2e.sh
+
+      - name: Tear down and delete containers and DB volumes
+        if: always()
+        run: ./scripts/stack.sh down

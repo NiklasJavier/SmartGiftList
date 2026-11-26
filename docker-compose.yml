@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: docker.io/library/postgres:16-alpine
+    container_name: smartgiftlist-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-smartgiftlist}
+      POSTGRES_USER: ${DB_USER:-smartgiftlist}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-smartgiftlist}
+    volumes:
+      - smartgiftlist_pgdata:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    ports:
+      - "${PG_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-smartgiftlist} -d ${POSTGRES_DB:-smartgiftlist}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smartgiftlist-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: ${DB_URL:-jdbc:postgresql://postgres:5432/smartgiftlist}
+      DB_USER: ${DB_USER:-smartgiftlist}
+      DB_PASSWORD: ${DB_PASSWORD:-smartgiftlist}
+      DB_SCHEMA: ${DB_SCHEMA:-smartgiftlist}
+    ports:
+      - "${APP_PORT:-8080}:8080"
+
+volumes:
+  smartgiftlist_pgdata:

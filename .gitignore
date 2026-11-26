@@ -1,0 +1,28 @@
+# Gradle & Java build outputs
+.gradle/
+build/
+out/
+target/
+*.class
+*.war
+*.ear
+
+# Ephemeral local Nix Tomcat + PostgreSQL runtime
+.local-runtime/
+
+# IDE & OS metadata
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+
+# Nix & direnv
+.direnv/
+result
+result-*
+
+# Environment & runtime secrets
+.env
+*.log
