@@ -77,6 +77,27 @@ flowchart LR
 
 ---
 
+## Views & Screenshots
+
+Captured from the live Servlet 6 / PostgreSQL 16 application (`1440x900` desktop viewport):
+
+| Landing Page | Gift Details & Claiming Modal |
+| :---: | :---: |
+| [![Landing Page](./docs/screenshots/landing.png)](./docs/screenshots/landing.png) | [![Gift Details & Claiming Modal](./docs/screenshots/gift-details-modal.png)](./docs/screenshots/gift-details-modal.png) |
+| Hero overview, FAQ accordion, and feature highlights (`/`) | Participant capacity tracking and claim/release actions (`?openDetails=1`) |
+
+| Sign In | Registration |
+| :---: | :---: |
+| [![Sign In](./docs/screenshots/login.png)](./docs/screenshots/login.png) | [![Registration](./docs/screenshots/register.png)](./docs/screenshots/register.png) |
+| Credential authentication view (`/login`) | New account onboarding form (`/register`) |
+
+| Profile Management | View Index |
+| :---: | :--- |
+| [![Profile Management](./docs/screenshots/profile.png)](./docs/screenshots/profile.png) | **All 6 captured views:**<br>- [Landing Page](./docs/screenshots/landing.png) (`/`)<br>- [Registration](./docs/screenshots/register.png) (`/register`)<br>- [Sign In](./docs/screenshots/login.png) (`/login`)<br>- [Wishlist Dashboard](./docs/screenshots/wishlists.png) (`/wishlists`)<br>- [Gift Details Modal](./docs/screenshots/gift-details-modal.png) (`?openDetails=1`)<br>- [Profile Management](./docs/screenshots/profile.png) (`/profile`) |
+| Avatar selection, credentials, and account deletion (`/profile`) | Full-resolution PNG captures stored in [`docs/screenshots/`](./docs/screenshots/). |
+
+---
+
 ## Documentation & Navigation
 
 | Document | Focus |
